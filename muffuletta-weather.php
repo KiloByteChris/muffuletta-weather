@@ -83,11 +83,21 @@ class Muffuletta_Weather extends WP_Widget {
 		*/
 		function displayWeather($weatherData, $instance) {
 			$weatherDisplayString = "<div class='current-weather-div'>
-				<h4>Fancy Bistro Patio Weather</h4>
-				<p>Current Status:</p>";
+				<p>Current Weather:</p>";
+			//Display the weather icon
 			if($instance['icon'] == "on") {
-				echo "<p>!</p>";
 				$weatherDisplayString .= "<img src='http://openweathermap.org/img/w/".$weatherData->weather[0]->icon.".png' />";
+			}
+			//Display weather description
+			if($instance['description'] == "on") {
+				$weatherDisplayString .= "<p>".$weatherData->weather[0]->description."</p>";
+			}
+			//Display the tempurature
+			if($instance['temp'] == "on") {
+				$kel = $weatherData->main->temp;
+				$currentTemp = ($kel * (9/5)) - 459.67;
+				$currentTemp = round($currentTemp);
+				$weatherDisplayString .= "<p>".$currentTemp."&deg</p>";
 			}
 
 			$weatherDisplayString .= "</div>";
@@ -106,11 +116,32 @@ class Muffuletta_Weather extends WP_Widget {
 	 * @param array $instance Previously saved values from database.
 	 */
 	public function form( $instance ) {
+		// Check to see if any of the form controls are set already.
 		if ( isset( $instance[ 'title' ] ) ) {
 			$title = $instance[ 'title' ];
 		}
 		else {
 			$title = __( 'New title', 'text_domain' );
+		}
+		if ( $instance[ 'icon' ] == 'on') {
+			$icon = $instance[ 'icon' ];
+			$iconCheck == "checked";
+		}
+		else {
+			$icon = "";
+			$iconCheck == "";
+		}
+		if ( isset( $instance[ 'description' ] ) ) {
+			$description = $instance[ 'description' ];
+		}
+		else {
+			$description = "";
+		}
+		if ( isset( $instance[ 'temp' ] ) ) {
+			$temp = $instance[ 'temp' ];
+		}
+		else {
+			$temp = "";
 		}
 		?>
 		<p>
@@ -121,7 +152,11 @@ class Muffuletta_Weather extends WP_Widget {
 		<h4>Display Options:</h4>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'icon' ); ?>"><?php _e( 'Icon: ' ); ?></label>
-			<input class="widefat" id="<?php echo $this->get_field_id( 'icon' ); ?>" name="<?php echo $this->get_field_name( 'icon' ); ?>" type="checkbox" value="<?php echo esc_attr( 'on' ); ?>">
+			<input class="widefat" id="<?php echo $this->get_field_id( 'icon' ); ?>" name="<?php echo $this->get_field_name( 'icon' ); ?>" type="checkbox" value="<?php echo esc_attr( 'on' );?>" <?php echo $iconCheck ?>>
+			<label for="<?php echo $this->get_field_id( 'description' ); ?>"><?php _e( 'Description: ' ); ?></label>
+			<input class="widefat" id="<?php echo $this->get_field_id( 'description' ); ?>" name="<?php echo $this->get_field_name( 'description' ); ?>" type="checkbox" value="<?php echo esc_attr( 'on' ); ?>">
+			<label for="<?php echo $this->get_field_id( 'temp' ); ?>"><?php _e( 'Tempurature: ' ); ?></label>
+			<input class="widefat" id="<?php echo $this->get_field_id( 'temp' ); ?>" name="<?php echo $this->get_field_name( 'temp' ); ?>" type="checkbox" value="<?php echo esc_attr( 'on' ); ?>">
 		</p>
 		<?php
 	}
@@ -137,8 +172,10 @@ class Muffuletta_Weather extends WP_Widget {
 	 */
 	public function update( $new_instance, $old_instance ) {
 		$instance = array();
-		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
-		$instance['icon'] = ( ! empty( $new_instance['icon'] ) ) ? strip_tags( $new_instance['icon'] ) : '';
+		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : 'off';
+		$instance['icon'] = ( ! empty( $new_instance['icon'] ) ) ? strip_tags( $new_instance['icon'] ) : 'off';
+		$instance['description'] = ( ! empty( $new_instance['description'] ) ) ? strip_tags( $new_instance['description'] ) : 'off';
+		$instance['temp'] = ( ! empty( $new_instance['temp'] ) ) ? strip_tags( $new_instance['temp'] ) : 'off';
 		return $instance;
 	}
 } // class My_Widget
