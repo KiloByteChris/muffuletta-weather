@@ -81,21 +81,22 @@ class Muffuletta_Weather extends WP_Widget {
 			Function to build an HTML string that displays the weather infromation
 			Echos html to the page
 		*/
-		function displayWeather($weatherData) {
+		function displayWeather($weatherData, $instance) {
 			$weatherDisplayString = "<div class='current-weather-div'>
 				<h4>Fancy Bistro Patio Weather</h4>
-				<p>Current Status:</p>
-				<img src='http://openweathermap.org/img/w/".$weatherData->weather[0]->icon.".png' />
-
-				";
+				<p>Current Status:</p>";
+			if($instance['icon'] == "on") {
+				echo "<p>!</p>";
+				$weatherDisplayString .= "<img src='http://openweathermap.org/img/w/".$weatherData->weather[0]->icon.".png' />";
+			}
 
 			$weatherDisplayString .= "</div>";
 
 			echo $weatherDisplayString;
 		}
-
 		$weatherData = getWeather();
-		displayWeather($weatherData);
+		displayWeather($weatherData, $instance);
+		var_dump($instance);
 	}
 	/**
 	 * Back-end widget form.
@@ -116,6 +117,12 @@ class Muffuletta_Weather extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:' ); ?></label>
 			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
 		</p>
+		<!-- Check boxes that allow for the user to choose what weather information to display -->
+		<h4>Display Options:</h4>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'icon' ); ?>"><?php _e( 'Icon: ' ); ?></label>
+			<input class="widefat" id="<?php echo $this->get_field_id( 'icon' ); ?>" name="<?php echo $this->get_field_name( 'icon' ); ?>" type="checkbox" value="<?php echo esc_attr( 'on' ); ?>">
+		</p>
 		<?php
 	}
 	/**
@@ -131,6 +138,7 @@ class Muffuletta_Weather extends WP_Widget {
 	public function update( $new_instance, $old_instance ) {
 		$instance = array();
 		$instance['title'] = ( ! empty( $new_instance['title'] ) ) ? strip_tags( $new_instance['title'] ) : '';
+		$instance['icon'] = ( ! empty( $new_instance['icon'] ) ) ? strip_tags( $new_instance['icon'] ) : '';
 		return $instance;
 	}
 } // class My_Widget
