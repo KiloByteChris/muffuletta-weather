@@ -73,7 +73,6 @@ class Muffuletta_Weather extends WP_Widget {
 		    $url .= $apiKey;
 		    $weatherData = callAPI($url);
 			$weatherData = json_decode($weatherData);
-			print_r($weatherData);
 			return $weatherData;
 		}
 
@@ -82,11 +81,10 @@ class Muffuletta_Weather extends WP_Widget {
 			Echos html to the page
 		*/
 		function displayWeather($weatherData, $instance) {
-			$weatherDisplayString = "<div class='current-weather-div'>
-				<p>Current Weather:</p>";
+			$weatherDisplayString = "<div class='current-weather-div'>";
 			//Display the weather icon
 			if($instance['icon'] == "on") {
-				$weatherDisplayString .= "<img src='http://openweathermap.org/img/w/".$weatherData->weather[0]->icon.".png' />";
+				$weatherDisplayString .= "<img class='weatherImg' src='http://openweathermap.org/img/w/".$weatherData->weather[0]->icon.".png' />";
 			}
 			//Display weather description
 			if($instance['description'] == "on") {
@@ -106,7 +104,6 @@ class Muffuletta_Weather extends WP_Widget {
 		}
 		$weatherData = getWeather();
 		displayWeather($weatherData, $instance);
-		var_dump($instance);
 	}
 	/**
 	 * Back-end widget form.
